@@ -1,6 +1,6 @@
 # Rust-Projects
 
-Rust is a programming language that is used for safety, especially around double frees. Because I am interested in the blockchain space, and Rust is very prevalent in the space, I decided to make a few projects to expand my knowledge.
+Rust is a programming language that is used for safety, especially focused on preventing double frees through ownership rules. Because I am interested in the blockchain space, and Rust is very prevalent in the space, I decided to make a few projects to expand my knowledge.
 
 ```weight-on-mars``` is a project where you type in your weight in Newtons on Earth and you get your weight in Newtons on Mars. I used standard input, error handling, and strings in this project.
 
