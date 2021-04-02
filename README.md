@@ -1,5 +1,4 @@
 # Rust-Projects
-Projects for Learning Rust
 
 Rust is a programming language that is used for safety, especially around double frees. Because I am interested in the blockchain space, and Rust is very prevalent in the space, I decided to make a few projects to expand my knowledge.
 
