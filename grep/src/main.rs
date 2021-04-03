@@ -16,7 +16,7 @@ fn is_substring_of(small_string: &str, big_string: &str) -> bool {
         if &big_string[firstindex..lastindex] == small_string { //why do we put address of pointer?
             return true;
         }
-        println!("{}", substring);
+        //println!("{}", substring);
         firstindex += 1;
         lastindex += 1;
     }
@@ -33,17 +33,22 @@ fn main() {
     //let mut endindex;
     let mut line = String::new();
     let mut result: bool;
+    let mut counter = 1;
     while (true) {
-        match (io::stdin().read_line(&mut line)) {
-            Ok(n) => continue,
-            Err(err) => break,
+        io::stdin().read_line(&mut line);
+        result = match (line.is_empty()) {
+            true => break,
+            false => false,
         };
-        println!("{}", line);
+        if (result == true) {
+            break;
+        }
+        //println!("{}", line);
         //startindex = 0;
         //endindex = substring.len();
             //line = &text_holder[startindex..endindex];
         if (is_substring_of(substring, &line) == true) {
-            println!("{}", line);
+            println!("{}", line.trim());
         }
         line.clear();
     }
