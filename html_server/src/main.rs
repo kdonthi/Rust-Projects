@@ -58,6 +58,7 @@ fn main () -> Result<(), Error> {
                 //panic!("G5 and we live!");
                 //responseVector.extend(i.split(" ")[2].chars()); //putting first line in HTML response
                 responseVector.extend(" 200 OK\r\n".chars());
+                responseVector.extend("Content-Type: text/html\n".chars());
             }
             else {
                 responseVector.extend(i.chars()); //putting headers
