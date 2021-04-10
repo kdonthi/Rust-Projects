@@ -20,13 +20,24 @@ fn get_request(request: &mut TcpStream) -> String {
     println!("{}", stringReturn);
     return stringReturn;
 }
+fn strcmp(str1: &str, str2: &str) -> bool { 
+    let str1b = str1.as_bytes();
+    let str2b = str2.as_bytes();
+    println!("Str1: {:?}, Str2: {:?}", str1b, str2b);
+    println!("Str1: {:?}, Str2: {:?}", str1, str2);
+    if str1.len() != str2.len() {
+        return false;
+    }
+    for i in 0..str1.len() {
+        println!("Str1: {}, Str2: {}", str1b[i], str2b[i]);
+        if str1b[i] != str2b[i] {
+            return false;
+        }
+    }
+    return true;
+}
 
 fn main () -> Result<(), Error> {
-    //FtpListner -> bind onto the IP address we want to listen on //so where is the server being created?
-    //is an ip address just a port where a connection CAN arrive at (like a port is a place a ship can dock?)
-    //is a server just something that listens to incoming connections on an IP address and responds?
-    //whenever you have a ?, it needs to be in a function that returns a Result((), whatever type inside error)
-    //run cargo check to get cool error checking!
     let listener = TcpListener::bind("127.0.0.1:7878");
     let listener = match listener {
         Ok(TCPListener) => TCPListener,
@@ -39,43 +50,47 @@ fn main () -> Result<(), Error> {
         streamCopy = stream;
         println!("{:?}", streamCopy);
         let mut streamCopy = match streamCopy {
-            Ok(stream) => stream,
+            Ok(strm) => strm,
             Err(err) => panic!("Error in listening!"),
         };
         counter = 0;
         let mut requestString = get_request(&mut streamCopy);
         let mut responseVector: Vec<char> = Vec::new();
-        for i in requestString.split("\n") {
-            if counter == 0 {
-                for (counter, j) in (i.split(" ")).enumerate() {
-                    //println!("Counter: {}, Val: {}", counter ,j);
-                    if counter == 2 {
-                        println!("{:?}", j.trim().chars());
-                        responseVector.extend(j.trim().chars()); //putting first line in HTML response
-                        break;
-                    }
-                }
-                //panic!("G5 and we live!");
-                //responseVector.extend(i.split(" ")[2].chars()); //putting first line in HTML response
-                responseVector.extend(" 200 OK\r\n".chars());
-                responseVector.extend("Content-Type: text/html\n".chars());
-            }
-            else {
-                responseVector.extend(i.chars()); //putting headers
-                responseVector.extend("\n".chars());
-            }
-            counter += 1;
-            //println!("\nCounter: {}", counter);
-        }
-        let htmlfile = File::open("sampleHTML.html");
+        let mut responseString: String;
+        let mut htmlfile;
         let mut contents = String::new();
-        htmlfile?.read_to_string(&mut contents);
+        for i in requestString.split("\n") {
+            println!("{}", i);
+            
+            for (counter, j) in (i.split(" ")).enumerate() {
+                if counter == 2 {
+                    if (strcmp(i, "GET / HTTP/1.1\r")) {
+                        htmlfile = File::open("correctHTML.html");
+                        htmlfile?.read_to_string(&mut contents);
+                        responseVector.extend(j.trim().chars());
+                        responseVector.extend(" 200 OK\r\nContent-Type: text/html\n".chars());
+                    }
+                    else { 
+                        htmlfile = File::open("errorHTML.html");
+                        htmlfile?.read_to_string(&mut contents);
+                        responseVector.extend(j.trim().chars());
+                        responseVector.extend(" 404 NOT FOUND\r\nContent-Type: text/html\n".chars());
+                    }
+                    //responseVector.extend(j.trim().chars()); //putting first line in HTML response
+                    break;
+                }
+            }
+            break;
+        }
         responseVector.extend(contents.chars());
-        println!("{:?}", responseVector.iter().collect::<String>());
         match streamCopy.write(&responseVector.iter().collect::<String>().as_bytes()[..]) {
             Ok(n) => n,
             Err(err) => panic!("{}", err),
         };
+        /*match streamCopy.write(&responseVector.iter().collect::<String>().as_bytes()[..]) {
+            Ok(n) => n,
+            Err(err) => panic!("{}", err),
+        };*/
         //streamCopy.write(&responseVector[..]);
     }
     Ok(())
